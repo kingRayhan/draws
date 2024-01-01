@@ -1,17 +1,20 @@
 "use client";
 
-import { MainMenu } from "@excalidraw/excalidraw";
 import { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types/types";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function DrawBoard() {
   const [Excalidraw, setExcalidraw] = useState<any>(null);
+  const [MainMenu, setMainMenu] = useState<any>(null);
+
   const [api, setApi] = useState<ExcalidrawImperativeAPI | null>(null);
 
   useEffect(() => {
     import("@excalidraw/excalidraw").then((comp) =>
       setExcalidraw(comp.Excalidraw)
     );
+
+    import("@excalidraw/excalidraw").then((comp) => setMainMenu(comp.MainMenu));
   }, []);
 
   return (
@@ -24,11 +27,11 @@ export default function DrawBoard() {
             canvasActions: { loadScene: false, saveAsImage: false },
           }}
         >
-          {/* <MainMenu>
+          <MainMenu>
             <MainMenu.DefaultItems.ChangeCanvasBackground />
             <MainMenu.DefaultItems.Socials />
             <MainMenu.DefaultItems.Export />
-          </MainMenu> */}
+          </MainMenu>
         </Excalidraw>
       )}
     </div>
