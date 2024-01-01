@@ -1,13 +1,24 @@
 "use client";
 import { Button, Menu, Paper, Text, Title } from "@mantine/core";
+import { Project } from "@prisma/client";
 import React from "react";
 import { TbDotsVertical } from "react-icons/tb";
 
-const ProjectCard = () => {
+interface Prop {
+  project: Project;
+  onClickDelete?: () => void;
+  onClickEdit?: () => void;
+}
+
+const ProjectCard: React.FC<Prop> = ({
+  project,
+  onClickDelete,
+  onClickEdit,
+}) => {
   return (
     <Paper withBorder p={"md"}>
       <div className="flex justify-between">
-        <Title order={4}>Project Title</Title>
+        <Title order={4}>{project.name}</Title>
         <Menu shadow="md" width={200}>
           <Menu.Target>
             <button>
@@ -16,15 +27,12 @@ const ProjectCard = () => {
           </Menu.Target>
 
           <Menu.Dropdown>
-            <Menu.Item>Edit</Menu.Item>
-            <Menu.Item>Delete</Menu.Item>
+            <Menu.Item onClick={onClickEdit}>Edit</Menu.Item>
+            <Menu.Item onClick={onClickDelete}>Delete</Menu.Item>
           </Menu.Dropdown>
         </Menu>
       </div>
-      <Text>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quas,
-        laudantium!
-      </Text>
+      <Text>{project?.description}</Text>
     </Paper>
   );
 };

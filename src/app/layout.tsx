@@ -2,6 +2,7 @@ import { PropsWithChildren } from "react";
 import "@mantine/core/styles.css";
 import "./globals.scss";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+import ReactQueryProvider from "@/utils/ReactQueryProvider";
 
 export const metadata = {
   title: "Create Next App",
@@ -15,7 +16,9 @@ const RootLayout: React.FC<PropsWithChildren> = ({ children }) => {
         <ColorSchemeScript />
       </head>
       <body>
-        <MantineProvider>{children}</MantineProvider>
+        <ReactQueryProvider>
+          <MantineProvider>{children}</MantineProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );

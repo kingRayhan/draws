@@ -27,3 +27,21 @@ export async function POST(request: NextRequest) {
     project: res,
   });
 }
+
+// DELETE
+export async function DELETE(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const id = searchParams.get("id");
+
+  if (!id) {
+    return NextResponse.json({ message: "Id is required." }, { status: 400 });
+  }
+
+  const res = await prisma.project.delete({
+    where: { id },
+  });
+  return NextResponse.json({
+    message: "Project deleted successfully!",
+    project: res,
+  });
+}
