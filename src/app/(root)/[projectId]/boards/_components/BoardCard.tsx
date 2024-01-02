@@ -1,5 +1,6 @@
 import { Menu, Paper, Text, Title } from "@mantine/core";
 import { Board } from "@prisma/client";
+import Link from "next/link";
 import React from "react";
 import { TbDotsVertical } from "react-icons/tb";
 
@@ -13,7 +14,11 @@ const BoardCard: React.FC<Prop> = ({ board, onClickDelete, onClickEdit }) => {
   return (
     <Paper withBorder p={"md"}>
       <div className="flex justify-between">
-        <Title order={4}>{board.name}</Title>
+        <Title order={4}>
+          <Link href={`/${board.projectId}/boards/${board.id}`}>
+            {board.name}
+          </Link>
+        </Title>
         <Menu shadow="md" width={200}>
           <Menu.Target>
             <button>
