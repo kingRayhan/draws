@@ -3,7 +3,7 @@
 import { Button, Container, Modal, Title } from "@mantine/core";
 import { modals } from "@mantine/modals";
 
-import React from "react";
+import React, { useState } from "react";
 import ProjectCard from "./ProjectCard";
 import { useDisclosure } from "@mantine/hooks";
 import { Project } from "@prisma/client";
@@ -19,6 +19,7 @@ interface Prop {
 const ProjectList: React.FC<Prop> = ({ projects }) => {
   const [modalOpened, modalHandler] = useDisclosure(false);
   const router = useRouter();
+  const [editableProject, setEditableProject] = useState<Project | null>();
 
   const { mutate: deleteMutate } = useMutation({
     mutationFn: async (id: string) => {
@@ -31,13 +32,14 @@ const ProjectList: React.FC<Prop> = ({ projects }) => {
 
   const { mutate: updateMutate } = useMutation({
     mutationFn: async (data: Partial<Project>) => {
-      await fetch(`/api/projects`, {
-        method: "POST",
+      await fetch(`/api/projects?id=${data.id}`, {
+        method: "PATCH",
         body: JSON.stringify(data),
       });
     },
     onSuccess: () => {
       router.refresh();
+      modalHandler.close();
     },
   });
 
@@ -59,12 +61,21 @@ const ProjectList: React.FC<Prop> = ({ projects }) => {
       <Modal opened={modalOpened} onClose={modalHandler.close}>
         <ProjectForm
           loading={createMutationStatus === "pending"}
-          onSubmit={(data) =>
+          project={editableProject}
+          onSubmit={(data) => {
+            if (editableProject) {
+              updateMutate({
+                id: editableProject.id,
+                name: data.name,
+                description: data.description,
+              });
+              return;
+            }
             createMutate({
               name: data.name,
               description: data.description,
-            })
-          }
+            });
+          }}
         />
       </Modal>
       <Container my={"lg"}>
@@ -92,6 +103,10 @@ const ProjectList: React.FC<Prop> = ({ projects }) => {
                     deleteMutate(project.id);
                   },
                 });
+              }}
+              onClickEdit={() => {
+                setEditableProject(project);
+                modalHandler.open();
               }}
             />
           ))}

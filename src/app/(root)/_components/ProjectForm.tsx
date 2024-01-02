@@ -4,6 +4,7 @@ import * as yup from "yup";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ErrorMessage } from "@hookform/error-message";
+import { Project } from "@prisma/client";
 
 const validationSchema = yup.object().shape({
   name: yup.string().required().min(10).label("Name"),
@@ -15,15 +16,16 @@ type IFormPayload = yup.InferType<typeof validationSchema>;
 interface Prop {
   onSubmit: (data: IFormPayload) => void;
   loading?: boolean;
+  project?: Project | null;
 }
-const ProjectForm: React.FC<Prop> = ({ onSubmit, loading }) => {
+const ProjectForm: React.FC<Prop> = ({ onSubmit, loading, project }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<IFormPayload>({
     resolver: yupResolver(validationSchema),
-    defaultValues: {},
+    defaultValues: { ...project },
   });
 
   const handleOnSubmit: SubmitHandler<IFormPayload> = (data) => {
