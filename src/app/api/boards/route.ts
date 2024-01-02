@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/server/db";
-import { createProjectDto, updateProjectDto } from "./_dto";
+import { createBoardDto, updateProjectDto } from "./_dto";
 
 export async function GET(request: Request) {
   return NextResponse.json({ message: "Hello, Next.js!" });
@@ -10,16 +10,16 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
 
   // validate body
-  const validatedBody = createProjectDto.safeParse(body);
+  const validatedBody = createBoardDto.safeParse(body);
 
   if (!validatedBody.success) {
     return NextResponse.json(validatedBody.error.issues, { status: 400 });
   }
 
-  const res = await prisma.project.create({
+  const res = await prisma.board.create({
     data: {
-      name: validatedBody.data.name,
-      description: validatedBody.data.description,
+      name: validatedBody.data?.name,
+      projectId: validatedBody.data?.projectId,
     },
   });
   return NextResponse.json({
@@ -28,8 +28,17 @@ export async function POST(request: NextRequest) {
   });
 }
 
-export async function PUT(request: NextRequest) {
+export async function PATCH(request: NextRequest) {
   const body = await request.json();
+  const searchParams = request.nextUrl.searchParams;
+  const id = searchParams.get("id");
+
+  if (!id) {
+    return NextResponse.json(
+      { message: "Board id is required!" },
+      { status: 400 }
+    );
+  }
 
   // validate body
   const validatedBody = updateProjectDto.safeParse(body);
@@ -38,13 +47,13 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json(validatedBody.error.issues, { status: 400 });
   }
 
-  const res = await prisma.project.update({
-    where: {
-      id: validatedBody.data?.id,
-    },
+  const res = await prisma.board.update({
+    where: { id },
     data: {
       name: validatedBody.data?.name,
       description: validatedBody.data?.description,
+      appStates: validatedBody.data?.appStates,
+      elements: validatedBody.data?.elements,
     },
   });
   return NextResponse.json({
@@ -65,11 +74,11 @@ export async function DELETE(request: NextRequest) {
     );
   }
 
-  const res = await prisma.project.delete({
+  const res = await prisma.board.delete({
     where: { id },
   });
   return NextResponse.json({
-    message: "Project deleted successfully!",
-    project: res,
+    message: "Board deleted successfully!",
+    board: res,
   });
 }

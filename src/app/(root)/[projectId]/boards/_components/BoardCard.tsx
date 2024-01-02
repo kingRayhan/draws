@@ -1,27 +1,19 @@
-"use client";
-import { Button, Menu, Paper, Text, Title } from "@mantine/core";
-import { Project } from "@prisma/client";
-import Link from "next/link";
+import { Menu, Paper, Text, Title } from "@mantine/core";
+import { Board } from "@prisma/client";
 import React from "react";
 import { TbDotsVertical } from "react-icons/tb";
 
 interface Prop {
-  project: Project;
+  board: Board;
   onClickDelete?: () => void;
   onClickEdit?: () => void;
 }
 
-const ProjectCard: React.FC<Prop> = ({
-  project,
-  onClickDelete,
-  onClickEdit,
-}) => {
+const BoardCard: React.FC<Prop> = ({ board, onClickDelete, onClickEdit }) => {
   return (
     <Paper withBorder p={"md"}>
       <div className="flex justify-between">
-        <Title order={4}>
-          <Link href={`/${project.id}/boards`}>{project.name}</Link>
-        </Title>
+        <Title order={4}>{board.name}</Title>
         <Menu shadow="md" width={200}>
           <Menu.Target>
             <button>
@@ -35,9 +27,9 @@ const ProjectCard: React.FC<Prop> = ({
           </Menu.Dropdown>
         </Menu>
       </div>
-      <Text>{project?.description}</Text>
+      <Text>{board?.description}</Text>
     </Paper>
   );
 };
 
-export default ProjectCard;
+export default BoardCard;
