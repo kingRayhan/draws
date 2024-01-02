@@ -11,8 +11,11 @@
   },
   "dependencies": {
     "@excalidraw/excalidraw": "^0.17.2",
+    "@hookform/error-message": "^2.0.1",
+    "@hookform/resolvers": "^3.3.3",
     "@mantine/core": "^7.3.2",
     "@mantine/hooks": "^7.3.2",
+    "@mantine/modals": "^7.3.2",
     "@prisma/client": "^5.7.1",
     "@tanstack/react-query": "^5.17.0",
     "@types/react": "18.2.46",
@@ -21,7 +24,9 @@
     "next": "14.0.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hook-form": "^7.49.2",
     "react-icons": "^4.12.0",
+    "yup": "^1.3.3",
     "zod": "^3.22.4"
   },
   "devDependencies": {

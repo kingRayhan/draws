@@ -2,7 +2,8 @@ import { PropsWithChildren } from "react";
 import "@mantine/core/styles.css";
 import "./globals.scss";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
-import ReactQueryProvider from "@/utils/ReactQueryProvider";
+import ReactQueryProvider from "@/_common/providers/ReactQueryProvider";
+import { ModalsProvider } from "@mantine/modals";
 
 export const metadata = {
   title: "Create Next App",
@@ -17,7 +18,9 @@ const RootLayout: React.FC<PropsWithChildren> = ({ children }) => {
       </head>
       <body>
         <ReactQueryProvider>
-          <MantineProvider>{children}</MantineProvider>
+          <MantineProvider>
+            <ModalsProvider>{children}</ModalsProvider>
+          </MantineProvider>
         </ReactQueryProvider>
       </body>
     </html>
