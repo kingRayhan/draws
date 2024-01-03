@@ -18,8 +18,8 @@ export async function POST(request: NextRequest) {
 
   const res = await prisma.project.create({
     data: {
-      name: body.name,
-      description: body.description,
+      name: validatedBody.data.name,
+      description: validatedBody.data.description,
     },
   });
   return NextResponse.json({
