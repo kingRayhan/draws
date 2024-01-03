@@ -42,10 +42,17 @@ const DrawingBoard: React.FC<Prop> = ({ initialData, boardId }) => {
   return (
     <div className="h-[100vh]">
       <button
+        className="absolute top-0 right-0 z-50"
         onClick={() => {
           mutate({
             elements: JSON.stringify(api?.getSceneElements()),
             appStates: JSON.stringify(api?.getAppState()),
+          });
+
+          api?.setToast({
+            message: "Board saved",
+            duration: 3000,
+            closable: true,
           });
         }}
       >
