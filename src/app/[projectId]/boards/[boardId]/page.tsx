@@ -1,9 +1,11 @@
-"use client";
+import prisma from "@/server/db";
+import React from "react";
+import dynamic from "next/dynamic";
 
-import DrawBoard from "@/_common/components/DrawingBoard";
-import { Board } from "@prisma/client";
-import { useMutation } from "@tanstack/react-query";
-import React, { useCallback } from "react";
+const DrawBoard = dynamic(
+  async () => await import("@/_common/components/DrawingBoard"),
+  { ssr: false }
+);
 
 interface Prop {
   params: {
@@ -12,37 +14,22 @@ interface Prop {
   };
 }
 
-const BoardDetailsPage: React.FC<Prop> = ({ params }) => {
-  const { mutate } = useMutation({
-    mutationFn: async (data: Partial<Board>) => {
-      await fetch(`/api/boards?id=${params.boardId}`, {
-        method: "PATCH",
-        body: JSON.stringify(data),
-      });
-    },
-    onSuccess: (response) => {
-      console.log(response);
-    },
+const BoardDetailsPage: React.FC<Prop> = async ({ params }) => {
+  const board = await prisma.board.findUnique({
+    where: { id: params.boardId },
   });
 
-  const handleUpdateBoard = useCallback(
-    (data: { elements: string; appStates: string }) => {
-      console.log("Updating board", data);
-      mutate({
-        elements: data.elements,
-        appStates: data.appStates,
-      });
-    },
-    []
-  );
-
   return (
-    <DrawBoard
-      projectId={params.projectId}
-      boardId={params.boardId}
-      onSaved={handleUpdateBoard}
-    />
+    <>
+      <DrawBoard
+        boardId={params.boardId}
+        initialData={{
+          appStates: board?.appStates || "{}",
+          elements: board?.elements || "[]",
+        }}
+      />
+    </>
   );
 };
 
-export default React.memo(BoardDetailsPage);
+export default BoardDetailsPage;

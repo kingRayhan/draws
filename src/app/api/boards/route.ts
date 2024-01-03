@@ -2,8 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/server/db";
 import { createBoardDto, updateProjectDto } from "./_dto";
 
-export async function GET(request: Request) {
-  return NextResponse.json({ message: "Hello, Next.js!" });
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const id = searchParams.get("boardId");
+
+  // validate body
+  if (!id) {
+    return NextResponse.json(
+      { message: "Board id is required!" },
+      { status: 400 }
+    );
+  }
+
+  const res = await prisma.board.findUnique({
+    where: { id },
+  });
+
+  return NextResponse.json(res);
 }
 
 export async function POST(request: NextRequest) {
