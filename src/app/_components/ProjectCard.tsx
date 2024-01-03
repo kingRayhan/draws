@@ -18,7 +18,7 @@ const ProjectCard: React.FC<Prop> = ({
 }) => {
   return (
     <Paper withBorder p={"md"}>
-      <div className="flex justify-between">
+      <div className="flex items-start justify-between">
         <Title order={4}>
           <Link href={`/${project.id}/boards`}>{project.name}</Link>
         </Title>

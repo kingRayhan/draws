@@ -1,8 +1,7 @@
 import React from "react";
-import DrawingBoard from "./_components/DrawingBoard";
 
 const page = () => {
-  return <DrawingBoard />;
+  return <h2>Drawing</h2>;
 };
 
 export default page;

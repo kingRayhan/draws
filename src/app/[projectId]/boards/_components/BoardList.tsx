@@ -10,6 +10,7 @@ import React, { use, useState } from "react";
 import BoardCard from "./BoardCard";
 import { modals } from "@mantine/modals";
 import BoardForm from "./BoardForm";
+import Link from "next/link";
 
 interface Prop {
   boards: Board[];
@@ -82,7 +83,7 @@ const BoardList: React.FC<Prop> = ({ boards }) => {
       <Container my={"lg"}>
         <div className="flex items-center justify-between">
           <Title order={3} my={"md"}>
-            Projects/{params.projectId}
+            <Link href={"/"}>Projects</Link>/{params.projectId}
           </Title>
           <Button onClick={modalHandler.open}>Add New</Button>
         </div>

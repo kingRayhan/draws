@@ -1,3 +1,6 @@
+"use client";
+
+import DrawBoard from "@/_common/components/DrawingBoard";
 import React from "react";
 
 interface Prop {
@@ -6,8 +9,9 @@ interface Prop {
     boardId: string;
   };
 }
+
 const BoardDetailsPage: React.FC<Prop> = ({ params }) => {
-  return <pre>{JSON.stringify(params)}</pre>;
+  return <DrawBoard projectId={params.projectId} boardId={params.boardId} />;
 };
 
 export default BoardDetailsPage;
