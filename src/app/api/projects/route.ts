@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/server/db";
+import { NextRequest, NextResponse } from "next/server";
 import { createProjectDto, updateProjectDto } from "./_dto";
 
 export async function GET(request: Request) {
@@ -8,13 +8,13 @@ export async function GET(request: Request) {
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  console.log(body);
-  // validate body
-  // const validatedBody = createProjectDto.safeParse(body);
 
-  // if (!validatedBody.success) {
-  //   return NextResponse.json(validatedBody.error.issues, { status: 400 });
-  // }
+  // validate body
+  const validatedBody = createProjectDto.safeParse(body);
+
+  if (!validatedBody.success) {
+    return NextResponse.json(validatedBody.error.issues, { status: 400 });
+  }
 
   const res = await prisma.project.create({
     data: {
