@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/server/db";
+import { NextRequest, NextResponse } from "next/server";
 import { createProjectDto, updateProjectDto } from "./_dto";
 
 export async function GET(request: Request) {
