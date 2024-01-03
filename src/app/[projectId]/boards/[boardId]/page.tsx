@@ -45,4 +45,4 @@ const BoardDetailsPage: React.FC<Prop> = ({ params }) => {
   );
 };
 
-export default BoardDetailsPage;
+export default React.memo(BoardDetailsPage);

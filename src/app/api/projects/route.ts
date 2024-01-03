@@ -8,18 +8,18 @@ export async function GET(request: Request) {
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-
+  console.log(body);
   // validate body
-  const validatedBody = createProjectDto.safeParse(body);
+  // const validatedBody = createProjectDto.safeParse(body);
 
-  if (!validatedBody.success) {
-    return NextResponse.json(validatedBody.error.issues, { status: 400 });
-  }
+  // if (!validatedBody.success) {
+  //   return NextResponse.json(validatedBody.error.issues, { status: 400 });
+  // }
 
   const res = await prisma.project.create({
     data: {
-      name: validatedBody.data.name,
-      description: validatedBody.data.description,
+      name: body.name,
+      description: body.description,
     },
   });
   return NextResponse.json({

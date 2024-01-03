@@ -1,7 +1,7 @@
 "use client";
 import { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types/types";
 import debounce from "lodash/debounce";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import DrawingMenu from "./DrawingMenu";
 import dynamic from "next/dynamic";
 import { useMutation } from "@tanstack/react-query";
@@ -40,4 +40,4 @@ const DrawingBoard: React.FC<Prop> = ({ projectId, boardId, onSaved }) => {
   );
 };
 
-export default DrawingBoard;
+export default React.memo(DrawingBoard);
