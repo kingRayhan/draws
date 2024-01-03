@@ -32,24 +32,28 @@ const DrawingBoard: React.FC<Prop> = ({ initialData, boardId }) => {
     },
   });
 
-  const debouncedHandleOnChange = debounce(() => {
-    if (api) {
-      mutate({
-        elements: JSON.stringify(api.getSceneElements()),
-        appStates: JSON.stringify(api.getAppState()),
-      });
-    }
-  }, 3000);
+  // const debouncedHandleOnChange = debounce(() => {
+  //   mutate({
+  //     elements: JSON.stringify(api?.getSceneElements()),
+  //     appStates: JSON.stringify(api?.getAppState()),
+  //   });
+  // }, 3000);
 
   return (
     <div className="h-[100vh]">
+      <button
+        onClick={() => {
+          mutate({
+            elements: JSON.stringify(api?.getSceneElements()),
+            appStates: JSON.stringify(api?.getAppState()),
+          });
+        }}
+      >
+        save
+      </button>
       <Excalidraw
         excalidrawAPI={setApi}
-        onChange={debouncedHandleOnChange}
-        initialData={{
-          elements: JSON.parse(initialData?.elements || "[]"),
-          appState: JSON.parse(initialData?.appStates || "{}"),
-        }}
+        initialData={{ elements: JSON.parse(initialData?.elements ?? "[]") }}
       >
         <DrawingMenu />
       </Excalidraw>
