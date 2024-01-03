@@ -7,9 +7,10 @@ import dynamic from "next/dynamic";
 import { useMutation } from "@tanstack/react-query";
 import { Board } from "@prisma/client";
 
-const Excalidraw = dynamic(
-  async () => (await import("@excalidraw/excalidraw")).Excalidraw,
-  { ssr: false }
+const Excalidraw = React.memo(
+  dynamic(async () => (await import("@excalidraw/excalidraw")).Excalidraw, {
+    ssr: false,
+  })
 );
 
 interface Prop {
@@ -20,46 +21,22 @@ interface Prop {
 const DrawingBoard: React.FC<Prop> = ({ initialData, boardId }) => {
   const [api, setApi] = useState<ExcalidrawImperativeAPI | null>(null);
 
-  const { mutate } = useMutation({
-    mutationFn: async (data: Partial<Board>) => {
-      await fetch(`/api/boards?id=${boardId}`, {
-        method: "PATCH",
-        body: JSON.stringify(data),
-      });
-    },
-    onSuccess: (response) => {
-      console.log(response);
-    },
-  });
-
-  // const debouncedHandleOnChange = debounce(() => {
-  //   mutate({
-  //     elements: JSON.stringify(api?.getSceneElements()),
-  //     appStates: JSON.stringify(api?.getAppState()),
-  //   });
-  // }, 3000);
+  const debouncedHandleOnChange = debounce(async () => {
+    await fetch(`/api/boards?id=${boardId}`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        elements: JSON.stringify(api?.getSceneElements()),
+        appStates: JSON.stringify(api?.getAppState()),
+      }),
+    });
+    console.log("debounced");
+  }, 500);
 
   return (
     <div className="h-[100vh]">
-      <button
-        className="absolute top-0 right-0 z-50"
-        onClick={() => {
-          mutate({
-            elements: JSON.stringify(api?.getSceneElements()),
-            appStates: JSON.stringify(api?.getAppState()),
-          });
-
-          api?.setToast({
-            message: "Board saved",
-            duration: 3000,
-            closable: true,
-          });
-        }}
-      >
-        save
-      </button>
       <Excalidraw
         excalidrawAPI={setApi}
+        onChange={debouncedHandleOnChange}
         initialData={{ elements: JSON.parse(initialData?.elements ?? "[]") }}
       >
         <DrawingMenu />
