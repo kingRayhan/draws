@@ -17,7 +17,7 @@ const RootLayout: React.FC<PropsWithChildren> = ({ children }) => {
       </head>
       <body>
         <ReactQueryProvider>
-          <MantineProvider>
+          <MantineProvider forceColorScheme="light">
             <ModalsProvider>{children}</ModalsProvider>
           </MantineProvider>
         </ReactQueryProvider>

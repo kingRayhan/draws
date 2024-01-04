@@ -1,10 +1,10 @@
 "use client";
 
 import EmptyState from "@/_common/components/EmptyState";
-import { Button, Container, Modal, Title } from "@mantine/core";
+import { Button, Container, Modal, Skeleton, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Board } from "@prisma/client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import React, { use, useState } from "react";
 import BoardCard from "./BoardCard";
@@ -13,21 +13,34 @@ import BoardForm from "./BoardForm";
 import Link from "next/link";
 
 interface Prop {
-  boards: Board[];
+  projectId: string;
 }
 
-const BoardList: React.FC<Prop> = ({ boards }) => {
+const BoardList: React.FC<Prop> = ({ projectId }) => {
   const [modalOpened, modalHandler] = useDisclosure(false);
   const router = useRouter();
   const params = useParams();
   const [editableBoard, setEditableBoard] = useState<Board | null>();
+
+  const {
+    data: boards,
+    isLoading,
+    refetch,
+  } = useQuery<Board[]>({
+    queryKey: ["boards", projectId],
+    queryFn: async () => {
+      const api = await fetch(`/api/boards?projectId=${projectId}`);
+      return api.json();
+    },
+  });
 
   const { mutate: deleteMutate } = useMutation({
     mutationFn: async (id: string) => {
       await fetch(`/api/boards?id=${id}`, { method: "DELETE" });
     },
     onSuccess: () => {
-      router.refresh();
+      // router.refresh();
+      refetch();
     },
   });
 
@@ -39,7 +52,8 @@ const BoardList: React.FC<Prop> = ({ boards }) => {
       });
     },
     onSuccess: () => {
-      router.refresh();
+      // router.refresh();
+      refetch();
       modalHandler.close();
     },
   });
@@ -52,7 +66,8 @@ const BoardList: React.FC<Prop> = ({ boards }) => {
       });
     },
     onSuccess: async () => {
-      router.refresh();
+      // router.refresh();
+      refetch();
       modalHandler.close();
     },
   });
@@ -87,11 +102,24 @@ const BoardList: React.FC<Prop> = ({ boards }) => {
           </Title>
           <Button onClick={modalHandler.open}>Add New</Button>
         </div>
-        {boards.length === 0 && (
+        {boards?.length === 0 && (
           <EmptyState label={"You have no board yet in this project"} />
         )}
         <div className="grid gap-4 lg:grid-cols-4">
-          {boards.map((board) => (
+          {isLoading && (
+            <>
+              <Skeleton height={100} />
+              <Skeleton height={100} />
+              <Skeleton height={100} />
+              <Skeleton height={100} />
+              <Skeleton height={100} />
+              <Skeleton height={100} />
+              <Skeleton height={100} />
+              <Skeleton height={100} />
+            </>
+          )}
+
+          {boards?.map((board) => (
             <BoardCard
               key={board.id}
               board={board}

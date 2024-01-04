@@ -1,6 +1,7 @@
 import prisma from "@/server/db";
 import React from "react";
 import dynamic from "next/dynamic";
+import { Metadata } from "next";
 
 const DrawBoard = dynamic(
   async () => await import("@/_common/components/DrawingBoard"),
@@ -13,6 +14,11 @@ interface Prop {
     boardId: string;
   };
 }
+
+export const meta: Metadata = {
+  title: "Project Board",
+  description: "Project Board",
+};
 
 const BoardDetailsPage: React.FC<Prop> = async ({ params }) => {
   const board = await prisma.board.findUnique({

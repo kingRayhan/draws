@@ -1,36 +1,49 @@
 "use client";
 
-import { Button, Container, Modal, Title } from "@mantine/core";
+import { Button, Container, Modal, Skeleton, Title } from "@mantine/core";
 import { modals } from "@mantine/modals";
 
 import React, { useState } from "react";
 import ProjectCard from "./ProjectCard";
 import { useDisclosure } from "@mantine/hooks";
 import { Project } from "@prisma/client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import ProjectForm from "./ProjectForm";
 import EmptyState from "@/_common/components/EmptyState";
 
-interface Prop {
-  projects: Project[];
-}
+interface Prop {}
 
-const ProjectList: React.FC<Prop> = ({ projects }) => {
+const ProjectList: React.FC<Prop> = () => {
   const [modalOpened, modalHandler] = useDisclosure(false);
   const router = useRouter();
   const [editableProject, setEditableProject] = useState<Project | null>();
+
+  const {
+    data: projects,
+    isLoading,
+    refetch,
+  } = useQuery<Project[]>({
+    queryKey: ["projects"],
+    queryFn: async () => {
+      const api = await fetch("/api/projects");
+      return api.json();
+    },
+  });
 
   const { mutate: deleteMutate } = useMutation({
     mutationFn: async (id: string) => {
       await fetch(`/api/projects?id=${id}`, { method: "DELETE" });
     },
     onSuccess: () => {
-      router.refresh();
+      refetch();
+    },
+    onError: (error) => {
+      console.log(error);
     },
   });
 
-  const { mutate: updateMutate } = useMutation({
+  const { mutate: updateMutate, status: updateMutationStatus } = useMutation({
     mutationFn: async (data: Partial<Project>) => {
       await fetch(`/api/projects?id=${data.id}`, {
         method: "PATCH",
@@ -38,7 +51,8 @@ const ProjectList: React.FC<Prop> = ({ projects }) => {
       });
     },
     onSuccess: () => {
-      router.refresh();
+      refetch();
+      // router.refresh();
       modalHandler.close();
     },
   });
@@ -51,7 +65,8 @@ const ProjectList: React.FC<Prop> = ({ projects }) => {
       });
     },
     onSuccess: async () => {
-      router.refresh();
+      refetch();
+      // router.refresh();
       modalHandler.close();
     },
   });
@@ -60,7 +75,10 @@ const ProjectList: React.FC<Prop> = ({ projects }) => {
     <>
       <Modal opened={modalOpened} onClose={modalHandler.close}>
         <ProjectForm
-          loading={createMutationStatus === "pending"}
+          loading={
+            createMutationStatus === "pending" ||
+            updateMutationStatus === "pending"
+          }
           project={editableProject}
           onSubmit={(data) => {
             if (editableProject) {
@@ -85,11 +103,23 @@ const ProjectList: React.FC<Prop> = ({ projects }) => {
           </Title>
           <Button onClick={modalHandler.open}>Add New</Button>
         </div>
-        {projects.length === 0 && (
+        {projects?.length === 0 && (
           <EmptyState label={"You have no project yet"} />
         )}
         <div className="grid gap-4 lg:grid-cols-4">
-          {projects.map((project) => (
+          {isLoading && (
+            <>
+              <Skeleton height={100} />
+              <Skeleton height={100} />
+              <Skeleton height={100} />
+              <Skeleton height={100} />
+              <Skeleton height={100} />
+              <Skeleton height={100} />
+              <Skeleton height={100} />
+              <Skeleton height={100} />
+            </>
+          )}
+          {projects?.map((project) => (
             <ProjectCard
               key={project.id}
               project={project}

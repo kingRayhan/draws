@@ -2,8 +2,9 @@ import prisma from "@/server/db";
 import { NextRequest, NextResponse } from "next/server";
 import { createProjectDto, updateProjectDto } from "./_dto";
 
-export async function GET(request: Request) {
-  return NextResponse.json({ message: "Hello, Next.js!" });
+export async function GET() {
+  const projects = await prisma.project.findMany();
+  return NextResponse.json(projects);
 }
 
 export async function POST(request: NextRequest) {

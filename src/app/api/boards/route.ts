@@ -4,21 +4,30 @@ import { createBoardDto, updateProjectDto } from "./_dto";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const id = searchParams.get("boardId");
+  const boardId = searchParams.get("boardId");
+  const projectId = searchParams.get("projectId");
 
-  // validate body
-  if (!id) {
-    return NextResponse.json(
-      { message: "Board id is required!" },
-      { status: 400 }
-    );
+  // // validate body
+  // if (!id) {
+  //   return NextResponse.json(
+  //     { message: "Board id is required!" },
+  //     { status: 400 }
+  //   );
+  // }
+
+  if (boardId) {
+    const res = await prisma.board.findUnique({
+      where: { id: boardId },
+    });
+    return NextResponse.json(res);
   }
 
-  const res = await prisma.board.findUnique({
-    where: { id },
-  });
-
-  return NextResponse.json(res);
+  if (projectId) {
+    const res = await prisma.board.findMany({
+      where: { projectId },
+    });
+    return NextResponse.json(res);
+  }
 }
 
 export async function POST(request: NextRequest) {

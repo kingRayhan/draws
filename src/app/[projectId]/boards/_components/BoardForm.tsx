@@ -4,10 +4,10 @@ import * as yup from "yup";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ErrorMessage } from "@hookform/error-message";
-import { Board, Project } from "@prisma/client";
+import { Board } from "@prisma/client";
 
 const validationSchema = yup.object().shape({
-  name: yup.string().required().min(10).label("Name"),
+  name: yup.string().required().label("Name"),
   description: yup.string().nullable().optional().label("Description"),
 });
 

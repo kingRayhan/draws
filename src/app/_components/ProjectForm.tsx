@@ -7,7 +7,7 @@ import { ErrorMessage } from "@hookform/error-message";
 import { Project } from "@prisma/client";
 
 const validationSchema = yup.object().shape({
-  name: yup.string().required().min(10).label("Name"),
+  name: yup.string().required().label("Name"),
   description: yup.string().nullable().optional().label("Description"),
 });
 
