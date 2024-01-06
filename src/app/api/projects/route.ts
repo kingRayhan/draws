@@ -1,13 +1,25 @@
 import prisma from "@/server/db";
 import { NextRequest, NextResponse } from "next/server";
 import { createProjectDto, updateProjectDto } from "./_dto";
+import { auth } from "@clerk/nextjs";
 
 export async function GET() {
-  const projects = await prisma.project.findMany();
+  const { userId } = auth();
+
+  if (!userId) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  const projects = await prisma.project.findMany({ where: { userId } });
   return NextResponse.json(projects);
 }
 
 export async function POST(request: NextRequest) {
+  const { userId } = auth();
+  if (!userId) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
   const body = await request.json();
 
   // validate body
@@ -21,6 +33,7 @@ export async function POST(request: NextRequest) {
     data: {
       name: validatedBody.data.name,
       description: validatedBody.data.description,
+      userId,
     },
   });
   return NextResponse.json({
@@ -31,17 +44,34 @@ export async function POST(request: NextRequest) {
 
 // PATCH
 export async function PATCH(request: NextRequest) {
-  const body = await request.json();
   const searchParams = request.nextUrl.searchParams;
   const id = searchParams.get("id");
 
-  // validate body
   if (!id) {
+    return NextResponse.json({ message: "Id is required." }, { status: 400 });
+  }
+
+  const { userId } = auth();
+  if (!userId) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  // check if the project belongs to the user
+  const exists = await prisma.project.findUnique({
+    where: {
+      id,
+      userId,
+    },
+  });
+
+  if (!exists) {
     return NextResponse.json(
-      { message: "Project id is required!" },
-      { status: 400 }
+      { message: "Project not found or does not belong to you." },
+      { status: 404 }
     );
   }
+
+  const body = await request.json();
 
   // validate body
   const validatedBody = updateProjectDto.safeParse(body);
@@ -70,6 +100,26 @@ export async function DELETE(request: NextRequest) {
 
   if (!id) {
     return NextResponse.json({ message: "Id is required." }, { status: 400 });
+  }
+
+  const { userId } = auth();
+  if (!userId) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  // check if the project belongs to the user
+  const exists = await prisma.project.findUnique({
+    where: {
+      id,
+      userId,
+    },
+  });
+
+  if (!exists) {
+    return NextResponse.json(
+      { message: "Project not found or does not belong to you." },
+      { status: 404 }
+    );
   }
 
   const res = await prisma.project.delete({
