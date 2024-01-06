@@ -15,7 +15,7 @@ const BoardCard: React.FC<Prop> = ({ board, onClickDelete, onClickEdit }) => {
     <Paper withBorder p={"md"}>
       <div className="flex justify-between">
         <Title order={4}>
-          <a target="_blank" href={`/${board.projectId}/boards/${board.id}`}>
+          <a target="_blank" href={`/boards/${board.id}`}>
             {board.name}
           </a>
         </Title>
