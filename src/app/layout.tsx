@@ -1,11 +1,11 @@
-import { PropsWithChildren } from "react";
-import "@mantine/core/styles.css";
-import "./globals.scss";
-import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import ReactQueryProvider from "@/_common/providers/ReactQueryProvider";
-import { ModalsProvider } from "@mantine/modals";
 import { ClerkProvider } from "@clerk/nextjs";
-import Navbar from "@/_common/components/Navbar";
+import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+import "@mantine/core/styles.css";
+import { ModalsProvider } from "@mantine/modals";
+import { PropsWithChildren } from "react";
+import { Toaster } from "react-hot-toast";
+import "./globals.scss";
 
 export const metadata = {
   title: "Graphland Drawing Tool",
@@ -25,6 +25,7 @@ const RootLayout: React.FC<PropsWithChildren> = ({ children }) => {
             </MantineProvider>
           </ReactQueryProvider>
         </ClerkProvider>
+        <Toaster position="bottom-right" />
       </body>
     </html>
   );
