@@ -1,5 +1,8 @@
 @layer tailwind {
   @tailwind base;
+  .cl-organizationSwitcher-root.🔒️ {
+    display: flex;
+  }
 }
 @tailwind components;
 @tailwind utilities;

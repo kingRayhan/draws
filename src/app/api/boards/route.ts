@@ -5,7 +5,7 @@ import { auth } from "@clerk/nextjs";
 
 export async function GET(request: NextRequest) {
   // get current user
-  const { userId } = auth();
+  const { userId, orgId } = auth();
   if (!userId) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
 
   if (projectId) {
     const res = await prisma.board.findMany({
-      where: { projectId, userId },
+      where: { projectId, userId, orgId },
     });
     if (!res) {
       return NextResponse.json(
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { userId } = auth();
+  const { userId, orgId } = auth();
   if (!userId) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
@@ -60,6 +60,7 @@ export async function POST(request: NextRequest) {
       name: validatedBody.data?.name,
       projectId: validatedBody.data?.projectId,
       userId,
+      orgId,
     },
   });
   return NextResponse.json({

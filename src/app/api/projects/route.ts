@@ -4,18 +4,41 @@ import { createProjectDto, updateProjectDto } from "./_dto";
 import { auth } from "@clerk/nextjs";
 
 export async function GET() {
-  const { userId } = auth();
+  const { userId, orgId } = auth();
+  console.log({ userId, orgId });
 
   if (!userId) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  const projects = await prisma.project.findMany({ where: { userId } });
-  return NextResponse.json(projects);
+  if (orgId) {
+    console.log("orgId", orgId);
+    const projects = await prisma.project.findMany({
+      where: { AND: [{ userId }, { orgId }] },
+    });
+    return NextResponse.json({ projects: projects || [], orgId });
+  }
+
+  const projects = await prisma.project.findMany({
+    where: {
+      AND: [
+        { userId },
+        {
+          OR: [
+            { orgId: null },
+            { orgId: undefined },
+            { orgId: { isSet: false } },
+          ],
+        },
+      ],
+    },
+  });
+  return NextResponse.json({ projects: projects || [], orgId });
 }
 
 export async function POST(request: NextRequest) {
-  const { userId } = auth();
+  const { userId, orgId } = auth();
+  console.log({ userId, orgId });
   if (!userId) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
@@ -34,6 +57,7 @@ export async function POST(request: NextRequest) {
       name: validatedBody.data.name,
       description: validatedBody.data.description,
       userId,
+      orgId,
     },
   });
   return NextResponse.json({

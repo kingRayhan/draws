@@ -27,7 +27,8 @@ const ProjectList: React.FC<Prop> = () => {
     queryKey: ["projects"],
     queryFn: async () => {
       const api = await fetch("/api/projects");
-      return api.json();
+      const res = await api.json();
+      return res.projects as Project[];
     },
   });
 

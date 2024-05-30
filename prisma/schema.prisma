@@ -20,6 +20,7 @@ model Project {
   boards      Board[]
 
   userId String
+  orgId  String?
 }
 
 model Board {
@@ -35,4 +36,5 @@ model Board {
   projectId   String  @db.ObjectId
 
   userId String
+  orgId  String?
 }
