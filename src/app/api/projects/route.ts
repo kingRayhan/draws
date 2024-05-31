@@ -2,6 +2,7 @@ import prisma from "@/server/db";
 import { NextRequest, NextResponse } from "next/server";
 import { createProjectDto, updateProjectDto } from "./_dto";
 import { auth } from "@clerk/nextjs";
+import { can } from "@/_common/utils/can";
 
 export async function GET() {
   const { userId, orgId } = auth();
@@ -12,9 +13,14 @@ export async function GET() {
   }
 
   if (orgId) {
-    console.log("orgId", orgId);
+    if (!can("org:can_view")) {
+      return NextResponse.json(
+        { message: "Permission denied" },
+        { status: 403 }
+      );
+    }
     const projects = await prisma.project.findMany({
-      where: { AND: [{ userId }, { orgId }] },
+      where: { orgId },
     });
     return NextResponse.json({ projects: projects || [], orgId });
   }

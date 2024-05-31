@@ -1,3 +1,4 @@
+import { can } from "@/_common/utils/can.client";
 import { Menu, Paper, Text, Title } from "@mantine/core";
 import { Board } from "@prisma/client";
 import Link from "next/link";
@@ -19,18 +20,22 @@ const BoardCard: React.FC<Prop> = ({ board, onClickDelete, onClickEdit }) => {
             {board.name}
           </a>
         </Title>
-        <Menu shadow="md" width={200}>
-          <Menu.Target>
-            <button>
-              <TbDotsVertical />
-            </button>
-          </Menu.Target>
+        {can("org:can_edit") ? (
+          <Menu shadow="md" width={200}>
+            <Menu.Target>
+              <button>
+                <TbDotsVertical />
+              </button>
+            </Menu.Target>
 
-          <Menu.Dropdown>
-            <Menu.Item onClick={onClickEdit}>Edit</Menu.Item>
-            <Menu.Item onClick={onClickDelete}>Delete</Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
+            <Menu.Dropdown>
+              <Menu.Item onClick={onClickEdit}>Edit</Menu.Item>
+              {can("org:admin") && (
+                <Menu.Item onClick={onClickDelete}>Delete</Menu.Item>
+              )}
+            </Menu.Dropdown>
+          </Menu>
+        ) : null}
       </div>
       <Text>{board?.description}</Text>
     </Paper>

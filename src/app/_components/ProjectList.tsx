@@ -16,7 +16,7 @@ interface Prop {}
 
 const ProjectList: React.FC<Prop> = () => {
   const [modalOpened, modalHandler] = useDisclosure(false);
-  const router = useRouter();
+
   const [editableProject, setEditableProject] = useState<Project | null>();
 
   const {

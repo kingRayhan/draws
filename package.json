@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^4.29.1",
-    "@excalidraw/excalidraw": "^0.17.2",
+    "@excalidraw/excalidraw": "^0.17.6",
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^3.3.3",
     "@mantine/core": "^7.3.2",

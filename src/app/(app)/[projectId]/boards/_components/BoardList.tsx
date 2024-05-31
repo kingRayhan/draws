@@ -11,6 +11,7 @@ import BoardCard from "./BoardCard";
 import { modals } from "@mantine/modals";
 import BoardForm from "./BoardForm";
 import Link from "next/link";
+import { can } from "@/_common/utils/can.client";
 
 interface Prop {
   projectId: string;
@@ -18,7 +19,7 @@ interface Prop {
 
 const BoardList: React.FC<Prop> = ({ projectId }) => {
   const [modalOpened, modalHandler] = useDisclosure(false);
-  const router = useRouter();
+
   const params = useParams();
   const [editableBoard, setEditableBoard] = useState<Board | null>();
 
@@ -100,7 +101,9 @@ const BoardList: React.FC<Prop> = ({ projectId }) => {
           <Title order={3} my={"md"}>
             <Link href={"/"}>Projects</Link>/{params.projectId}
           </Title>
-          <Button onClick={modalHandler.open}>Add New</Button>
+          {can("org:member") ? (
+            <Button onClick={modalHandler.open}>Add New</Button>
+          ) : null}
         </div>
         {boards?.length === 0 && (
           <EmptyState label={"You have no board yet in this project"} />

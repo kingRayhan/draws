@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/server/db";
 import { createBoardDto, updateProjectDto } from "./_dto";
 import { auth } from "@clerk/nextjs";
+import { can } from "@/_common/utils/can";
 
 export async function GET(request: NextRequest) {
   // get current user
@@ -28,8 +29,21 @@ export async function GET(request: NextRequest) {
   }
 
   if (projectId) {
+    if (orgId) {
+      const res = await prisma.board.findMany({
+        where: { projectId, orgId },
+      });
+      if (!res) {
+        return NextResponse.json(
+          { message: "Project not found or does not belongs to you" },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json(res);
+    }
+
     const res = await prisma.board.findMany({
-      where: { projectId, userId, orgId },
+      where: { projectId, userId },
     });
     if (!res) {
       return NextResponse.json(
@@ -55,6 +69,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(validatedBody.error.issues, { status: 400 });
   }
 
+  if (orgId && !can("org:member")) {
+    return NextResponse.json(
+      { message: "You are not allowed to create a board in this org" },
+      { status: 403 }
+    );
+  }
+
   const res = await prisma.board.create({
     data: {
       name: validatedBody.data?.name,
@@ -71,7 +92,7 @@ export async function POST(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   // get current user
-  const { userId } = auth();
+  const { userId, orgId } = auth();
   if (!userId) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
@@ -87,18 +108,10 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
-  // check if the project belongs to the user
-  const exists = await prisma.board.findUnique({
-    where: {
-      id,
-      userId,
-    },
-  });
-
-  if (!exists) {
+  if (orgId && !can("org:can_edit")) {
     return NextResponse.json(
-      { message: "Board not found or does not belongs to you" },
-      { status: 404 }
+      { message: "You are not allowed to update a board in this org" },
+      { status: 403 }
     );
   }
 
