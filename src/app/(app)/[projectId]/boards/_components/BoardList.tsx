@@ -12,6 +12,7 @@ import { modals } from "@mantine/modals";
 import BoardForm from "./BoardForm";
 import Link from "next/link";
 import { can } from "@/_common/utils/can.client";
+import { useAuth } from "@clerk/nextjs";
 
 interface Prop {
   projectId: string;
@@ -19,6 +20,7 @@ interface Prop {
 
 const BoardList: React.FC<Prop> = ({ projectId }) => {
   const [modalOpened, modalHandler] = useDisclosure(false);
+  const { orgId } = useAuth();
 
   const params = useParams();
   const [editableBoard, setEditableBoard] = useState<Board | null>();
@@ -28,7 +30,7 @@ const BoardList: React.FC<Prop> = ({ projectId }) => {
     isLoading,
     refetch,
   } = useQuery<Board[]>({
-    queryKey: ["boards", projectId],
+    queryKey: ["boards", projectId, orgId],
     queryFn: async () => {
       const api = await fetch(`/api/boards?projectId=${projectId}`);
       return api.json();

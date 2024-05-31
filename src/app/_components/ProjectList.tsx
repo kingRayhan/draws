@@ -3,20 +3,21 @@
 import { Button, Container, Modal, Skeleton, Title } from "@mantine/core";
 import { modals } from "@mantine/modals";
 
-import React, { useState } from "react";
-import ProjectCard from "./ProjectCard";
+import EmptyState from "@/_common/components/EmptyState";
+import { useAuth } from "@clerk/nextjs";
 import { useDisclosure } from "@mantine/hooks";
 import { Project } from "@prisma/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import ProjectCard from "./ProjectCard";
 import ProjectForm from "./ProjectForm";
-import EmptyState from "@/_common/components/EmptyState";
+import { can } from "@/_common/utils/can.client";
 
 interface Prop {}
 
 const ProjectList: React.FC<Prop> = () => {
   const [modalOpened, modalHandler] = useDisclosure(false);
-
+  const { orgId } = useAuth();
   const [editableProject, setEditableProject] = useState<Project | null>();
 
   const {
@@ -24,7 +25,7 @@ const ProjectList: React.FC<Prop> = () => {
     isLoading,
     refetch,
   } = useQuery<Project[]>({
-    queryKey: ["projects"],
+    queryKey: ["projects", orgId],
     queryFn: async () => {
       const api = await fetch("/api/projects");
       const res = await api.json();
@@ -102,7 +103,9 @@ const ProjectList: React.FC<Prop> = () => {
           <Title order={3} my={"md"}>
             Projects
           </Title>
-          <Button onClick={modalHandler.open}>Add New</Button>
+          {can("org:member") ? (
+            <Button onClick={modalHandler.open}>Add New</Button>
+          ) : null}
         </div>
         {projects?.length === 0 && (
           <EmptyState label={"You have no project yet"} />

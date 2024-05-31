@@ -10,10 +10,10 @@ const Navbar = () => {
 
       <div className="flex items-center gap-2">
         {/* <CustomOrganizationSwitcher /> */}
-        <OrganizationSwitcher
-          afterSelectOrganizationUrl={"/switch-org"}
-          afterSelectPersonalUrl={"/switch-org"}
-        />
+        <OrganizationSwitcher />
+        {/* 
+        afterSelectOrganizationUrl={"/switch-org"}
+          afterSelectPersonalUrl={"/switch-org"} */}
         <UserButton afterSignOutUrl="/" />
       </div>
     </div>
